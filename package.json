@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "Peace of Memory 백엔드 레포지토리 입니다.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "nodemon": "^3.1.7"
+  },
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
   }
 }
