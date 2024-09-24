@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Peace of Memory 백엔드 레포지토리 입니다.",
-  "main": "index.js",
+  "main": "app.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
