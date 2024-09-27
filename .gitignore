@@ -148,3 +148,6 @@ dist
 
 #보안관련
 package-lock.json
+
+#마이그레이션 
+*/migrations/
