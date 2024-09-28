@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Group {
+  id           String       @id @default(uuid())
+  name         String
+  password     String       // 해시된 값 저장
+  imageUrl     String?
+  isPublic     Boolean      @default(true)
+  introduction String?
+  createdAt    DateTime     @default(now())
+  
+  posts        Post[]
+  groupLikes   GroupLike[]
+  groupBadges  GroupBadge[]
+}
+
+model Badge {
+  id          String       @id @default(uuid())
+  content     String
+  groupBadges GroupBadge[]
+}
+
+model Post {
+  id           String     @id @default(uuid())
+  groupId      String
+  nickname     String
+  title        String
+  content      String
+  postPassword String     
+  imageUrl     String?
+  location     String?
+  moment       DateTime
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  group        Group      @relation(fields: [groupId], references: [id])
+
+  postLikes    PostLike[]
+  comments     Comment[]
+  tags         PostTag[]
+
+  @@index([groupId])
+}
+
+model GroupLike {
+  id        String   @id @default(uuid())
+  groupId   String
+  createdAt DateTime @default(now())
+
+  group     Group    @relation(fields: [groupId], references: [id])
+
+  @@index([groupId])
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  postId    String
+  createdAt DateTime @default(now())
+
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@index([postId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  nickname  String
+  content   String
+  password  String   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@index([postId])
+}
+
+model Tag {
+  id      String    @id @default(uuid())
+  content String    @unique
+
+  posts   PostTag[]
+}
+
+// 다대다 조인 테이블
+
+// post - tag
+model PostTag {
+  postId String
+  tagId  String
+
+  post   Post   @relation(fields: [postId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
+  @@index([postId])
+  @@index([tagId])
+}
+
+// group - badge
+model GroupBadge {
+  groupId String
+  badgeId String
+  
+  group   Group  @relation(fields: [groupId], references: [id])
+  badge   Badge  @relation(fields: [badgeId], references: [id])
+
+  @@id([groupId, badgeId])
+  @@index([groupId])
+  @@index([badgeId])
+}
