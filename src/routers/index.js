@@ -13,7 +13,7 @@ router.use("", testRouters);
 /**
  * @swagger
  * tags:
- *   name: image
+ *   name: Image
  *   description: image API 관련 엔드포인트
  */
 router.use("", imageRouters);
