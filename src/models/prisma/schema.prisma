@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id           Int         @id @default(autoincrement())
+  groupId      Int
+  group        Group       @relation(fields: [groupId], references: [id])
+  nickname     String
+  title        String
+  content      String
+  postPassword String
+  imageUrl     String
+  location     String
+  moment       DateTime
+  postLikes    Post_like[]
+  tags         Tag[]
+  comments     Comment[]
+}
+
+model Post_like {
+  id      Int   @id @default(autoincrement())
+  postId  Int
+  post    Post  @relation(fields: [postId], references: [id])
+  groupId Int
+  group   Group @relation(fields: [groupId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  groupId   Int
+  group     Group    @relation(fields: [groupId], references: [id])
+  nickname  String
+  content   String
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id      Int    @id @default(autoincrement())
+  postId  Int
+  post    Post   @relation(fields: [postId], references: [id])
+  groupId Int
+  group   Group  @relation(fields: [groupId], references: [id])
+  content String
+}
