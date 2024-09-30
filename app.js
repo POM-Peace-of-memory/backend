@@ -2,6 +2,7 @@ const express = require('express');
 const api = require("./src/routers/index")
 const app = express();
 const {errorHandler} = require("./src/middlewares/errorHandler")
+const cors = require("cors")
 
 // CORS 옵션 설정: 로컬 호스트에 대해서만 접근 허용
 const corsOptions = {
