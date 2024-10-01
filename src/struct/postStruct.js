@@ -8,7 +8,7 @@ export const CreatePost = s.object({
     content: s.string(),
     postPassword: s.string(),
     groupPassword: s.string(),
-    imageURL: s.string(),
+    imageUrl: s.string(),
     tags: s.array(Hashtag),
     location: s.string(),
     moment: s.string(),
