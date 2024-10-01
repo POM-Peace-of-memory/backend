@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require("../middlewares/asyncHandler");
-const { createPost, postList } = require('../controllers/postController');
+const { createPost, postList, editPost } = require('../controllers/postController');
 const router = express.Router();
 
 router.post("groups/:groupId/posts", asyncHandler(createPost));
@@ -254,4 +254,124 @@ router.get("groups/:groupId/posts", asyncHandler(postList));
  *                 message:
  *                   type: string
  *                   example: "잘못된 요청입니다."
+ */
+
+
+router.patch("posts/:postId", asyncHandler(editPost));
+/**
+ * @swagger
+ * /api/posts/{postId}:
+ *   patch:
+ *     tags: [Post]
+ *     summary: 게시글 수정
+ *     description: 게시글 정보를 수정합니다.
+ *     parameters:
+ *       - name: groupId
+ *         in: path
+ *         required: true
+ *         description: 그룹 ID
+ *         schema:
+ *           type: string
+ *       - name: postId
+ *         in: path
+ *         required: true
+ *         description: 게시글 ID
+ *         schema:
+ *           type: number
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               postPassword:
+ *                 type: string
+ *               imageUrl:
+ *                 type: string
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               location:
+ *                 type: string
+ *               moment:
+ *                 type: string
+ *                 format: date
+ *               isPublic:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: 게시글 수정 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 groupId:
+ *                   type: number
+ *                 nickname:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ *                 imageUrl:
+ *                   type: string
+ *                 tags:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 location:
+ *                   type: string
+ *                 moment:
+ *                   type: string
+ *                   format: date
+ *                 isPublic:
+ *                   type: boolean
+ *                 likeCount:
+ *                   type: number
+ *                 commentCount:
+ *                   type: number
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: 요청 양식 오류
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "잘못된 요청입니다."
+ *       403:
+ *         description: 비밀번호 오류
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "비밀번호가 틀렸습니다."
+ *       404:
+ *         description: 게시글을 찾을 수 없습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "존재하지 않습니다."
  */

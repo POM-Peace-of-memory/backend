@@ -2,7 +2,7 @@ const express = require('express');
 const asyncHandler = require('../middlewares/asyncHandler');
 const { ErrorCodes, CustomError } = require("../middlewares/errorHandler");
 const { assert } = require('superstruct');
-const { CreatePost } = require('../struct/postStruct');
+const { CreatePost, PatchPost } = require('../struct/postStruct');
 const { formatStringToDate } = require('../util/dateFormat');
 const { create } = require('superstruct');
 const { PrismaClient } = require('@prisma/client');
@@ -103,7 +103,7 @@ const postList = asyncHandler(async (req, res) => {
     } = req.query;
 
     // groupId에 해당하는 그룹 존재 여부 확인
-    const group = await prisma.groups.findUniqueOrThrow({
+    const group = await prisma.group.findUniqueOrThrow({
         where: { id: groupId },
     });
 
@@ -159,4 +159,47 @@ const postList = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = { createPost, postList };
+// 게시글 수정
+const editPost = asyncHandler(async (req, res) => {
+    const { postId } = req.params;
+
+    // 유효성 검사
+    assert(req.body, PatchPost);
+
+    // 비밀번호 제외 나머지 정보 저장
+    const { postPassword, ...updateData } = req.body;
+
+    // postId에 해당하는 게시글 존재 여부 확인
+    const foundPost = await prisma.post.findUniqueOrThrow({
+        where: { id: postId }
+    });
+
+    // 그룹 비밀번호 확인
+    if (group.password !== groupPassword) {
+        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
+    }
+
+    const updatedPost = await prisma.post.update({
+        where: { id: postId },
+        data: updateData,
+        select: {
+            id: true,
+            groupId: true,
+            nickname: true,
+            title: true,
+            content: true,
+            imageURL: true,
+            tags: true,
+            location: true,
+            moment: formatStringToDate(moment),
+            isPublic: true,
+            likeCount: true,
+            commentCount: true,
+            createdAt: true
+        }
+    });
+    res.status(200).json(updatedPost);
+})
+
+
+module.exports = { createPost, postList, editPost };

@@ -14,3 +14,5 @@ export const CreatePost = s.object({
     moment: s.string(),
     isPublic: s.boolean()
 })
+
+export const PatchPost = s.partial(CreatePost);
