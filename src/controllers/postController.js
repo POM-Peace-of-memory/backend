@@ -159,6 +159,7 @@ const postList = asyncHandler(async (req, res) => {
     });
 });
 
+
 // 게시글 수정
 const editPost = asyncHandler(async (req, res) => {
     const { postId } = req.params;
@@ -174,8 +175,8 @@ const editPost = asyncHandler(async (req, res) => {
         where: { id: postId }
     });
 
-    // 그룹 비밀번호 확인
-    if (group.password !== groupPassword) {
+    // 게시글 비밀번호 확인
+    if (foundPost.postPassword !== postPassword) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
     }
 
@@ -202,4 +203,24 @@ const editPost = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = { createPost, postList, editPost };
+// 게시글 삭제
+const deletePost = asyncHandler(async (req, res) => {
+    const { postId } = req.params;
+    const { postPassword } = req.body;
+
+    const foundPost = await prisma.post.findUniqueOrThrow({
+        where: { id: postId }
+    });
+
+    if (foundPost.postPassword !== postPassword) {
+        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
+    };
+
+    await prisma.post.delete({
+        where: { id: postId }
+    });
+
+    res.status(200).json({ message: "게시글 삭제 성공" });    
+});
+
+module.exports = { createPost, postList, editPost, deletePost };

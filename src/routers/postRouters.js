@@ -266,12 +266,6 @@ router.patch("posts/:postId", asyncHandler(editPost));
  *     summary: 게시글 수정
  *     description: 게시글 정보를 수정합니다.
  *     parameters:
- *       - name: groupId
- *         in: path
- *         required: true
- *         description: 그룹 ID
- *         schema:
- *           type: string
  *       - name: postId
  *         in: path
  *         required: true
@@ -374,4 +368,72 @@ router.patch("posts/:postId", asyncHandler(editPost));
  *                 message:
  *                   type: string
  *                   example: "존재하지 않습니다."
+ */
+
+
+router.delete("posts/:postId", asyncHandler(deletePost));
+/**
+ * @swagger
+ * /api/posts/{postId}:
+ *   delete:
+ *     tags: [Post]
+ *     summary: 게시글 삭제
+ *     description: 게시글을 삭제합니다.
+ *     parameters:
+ *       - name: postId
+ *         in: path
+ *         required: true
+ *         description: 게시글 ID
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               postPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 게시글 삭제 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "게시글 삭제 성공"
+ *       400:
+ *         description: 잘못된 요청입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "잘못된 요청입니다"
+ *       403:
+ *         description: 비밀번호가 틀렸습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "비밀번호가 틀렸습니다"
+ *       404:
+ *         description: 존재하지 않는 게시글입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "존재하지 않습니다"
  */
