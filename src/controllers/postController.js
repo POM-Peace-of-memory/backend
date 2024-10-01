@@ -6,8 +6,10 @@ const { CreatePost } = require('../struct/postStruct');
 const { formatStringToDate } = require('../util/dateFormat');
 const { create } = require('superstruct');
 const { PrismaClient } = require('@prisma/client');
+const { formatDateToString, formatStringToDate } = require('../utill/dateFormat');
 const prisma = new PrismaClient();
 
+// 게시글 등록
 const createPost = asyncHandler(async (req, res) => {
     const { groupId } = req.params;
     
@@ -86,4 +88,75 @@ const createPost = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = createPost;
+
+// 게시글 목록 조회
+const postList = asyncHandler(async (req, res) => {
+    const { groupId } = req.params;
+
+    // query parameter default 값 설정
+    const {
+        page = 1,
+        pageSize = 8,
+        sortBy = 'latest',
+        keyword = '',
+        isPublic = 'true'
+    } = req.query;
+
+    // groupId에 해당하는 그룹 존재 여부 확인
+    const group = await prisma.groups.findUniqueOrThrow({
+        where: { id: groupId },
+    });
+
+    // 게시글 keyword 포함 및 공개 조건 설정
+    const where = {
+        groupId: group.id,
+        ...(isPublic !== undefined && { isPublic }),
+        ...(keyword && {
+            OR: [
+                { title: { contains: keyword } },
+                { tags: { some: { name: { contains: keyword } } } },
+            ],
+        }),
+    };
+    
+    // 정렬 조건 설정
+    const orderBy = sortBy === 'mostLiked' ? { likeCount: 'desc' } :
+                    sortBy === 'mostCommented' ? { commentCount: 'desc' } :
+                    { createdAt: 'desc' };
+
+    // 게시글 조회
+    const [totalItemCount, posts] = await Promise.all([
+        prisma.post.count({ where }),
+        prisma.post.findMany({
+            where,
+            orderBy,
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+            select: {
+                id: true,
+                nickname: true,
+                title: true,
+                imageUrl: true,
+                isPublic: true,
+                likeCount: true,
+                commentCount: true,
+                moment: formatDateToString(moment),
+                tags: true,
+                location: true,
+                createdAt: formatDateToString(createdAt),
+            },
+        }),
+    ]);
+
+    // 페이지 계산
+    const totalPages = Math.ceil(totalItemCount / pageSize);
+
+    res.status(200).json({
+        currentPage: page,
+        totalPages,
+        totalItemCount,
+        data: posts,
+    });
+});
+
+module.exports = { createPost, postList };

@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require("../middlewares/asyncHandler");
-const createPost = require('../controllers/postController');
+const { createPost, postList } = require('../controllers/postController');
 const router = express.Router();
 
 router.post("groups/:groupId/posts", asyncHandler(createPost));
@@ -132,4 +132,126 @@ router.post("groups/:groupId/posts", asyncHandler(createPost));
  *                 message:
  *                   type: string
  *                   example: "존재하지 않는 데이터입니다."
+ */
+
+
+router.get("groups/:groupId/posts", asyncHandler(postList));
+/**
+ * @swagger
+ * /api/groups/{groupId}/posts:
+ *   get:
+ *     tags: [Post]
+ *     summary: 게시글 목록 조회
+ *     description: 그룹에 해당하는 게시글 목록을 조회합니다.
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         description: 그룹 ID
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         description: 현재 페이지 번호
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *       - in: query
+ *         name: pageSize
+ *         description: 페이지당 아이템 수
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *       - in: query
+ *         name: sortBy
+ *         description: 정렬 기준
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [latest, mostPosted, mostLiked]
+ *       - in: query
+ *         name: keyword
+ *         description: 제목 및 태그 검색어
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: "추억"
+ *       - in: query
+ *         name: isPublic
+ *         description: 공개 여부 (true/false)
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *           example: true
+ *     responses:
+ *       200:
+ *         description: 게시글 목록 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 currentPage:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 5
+ *                 totalItemCount:
+ *                   type: integer
+ *                   example: 50
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "1"
+ *                       nickname:
+ *                         type: string
+ *                         example: "사용자"
+ *                       title:
+ *                         type: string
+ *                         example: "추억 제목"
+ *                       imageUrl:
+ *                         type: string
+ *                         example: "https://your-image-url.com"
+ *                       isPublic:
+ *                         type: boolean
+ *                         example: true
+ *                       likeCount:
+ *                         type: integer
+ *                         example: 0
+ *                       commentCount:
+ *                         type: integer
+ *                         example: 0
+ *                       moment:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-02-22T07:47:49.803Z"
+ *                       tags:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                           example: "#추억"
+ *                       location:
+ *                         type: string
+ *                         example: "장소"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-02-22T07:47:49.803Z"
+ *       400:
+ *         description: 잘못된 요청입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "잘못된 요청입니다."
  */
