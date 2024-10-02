@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require("../middlewares/asyncHandler");
-const { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost } = require('../controllers/postController');
+const { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost, checkPublic } = require('../controllers/postController');
 const router = express.Router();
 
 router.post("groups/:groupId/posts", asyncHandler(createPost));
@@ -629,3 +629,43 @@ router.post("posts/:postId/like", asyncHandler(likePost));
  */
 
 
+router.get("posts/:postId/is-public", asyncHandler(checkPublic));
+/**
+ * @swagger
+ * /api/posts/{postId}/is-public:
+ *   get:
+ *     tags: [Post]
+ *     summary: 게시글 공개 여부 확인
+ *     description: 주어진 게시글의 공개 여부를 확인합니다.
+ *     parameters:
+ *       - name: postId
+ *         in: path
+ *         required: true
+ *         description: 확인할 게시글의 ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: 게시글의 공개 여부가 성공적으로 확인되었습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 123
+ *                 isPublic:
+ *                   type: boolean
+ *                   example: true
+ *       404:
+ *         description: 존재하지 않는 데이터입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "존재하지 않는 데이터입니다."
+ */

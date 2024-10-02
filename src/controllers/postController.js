@@ -171,12 +171,12 @@ const editPost = asyncHandler(async (req, res) => {
     const { postPassword, ...updateData } = req.body;
 
     // postId에 해당하는 게시글 존재 여부 확인
-    const foundPost = await prisma.post.findUniqueOrThrow({
+    const post = await prisma.post.findUniqueOrThrow({
         where: { id: postId }
     });
 
     // 게시글 비밀번호 확인
-    if (foundPost.postPassword !== postPassword) {
+    if (post.postPassword !== postPassword) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
     }
 
@@ -208,11 +208,11 @@ const deletePost = asyncHandler(async (req, res) => {
     const { postId } = req.params;
     const { postPassword } = req.body;
 
-    const foundPost = await prisma.post.findUniqueOrThrow({
+    const post = await prisma.post.findUniqueOrThrow({
         where: { id: postId }
     });
 
-    if (foundPost.postPassword !== postPassword) {
+    if (post.postPassword !== postPassword) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
     };
 
@@ -227,7 +227,7 @@ const deletePost = asyncHandler(async (req, res) => {
 const postDetail = asyncHandler(async (req, res) => {
     const { postId } = req.params;
 
-    const foundPost = await prisma.post.findUniqueOrThrow({
+    const post = await prisma.post.findUniqueOrThrow({
         where: { id: postId },
         select: {
             id: true,
@@ -246,7 +246,7 @@ const postDetail = asyncHandler(async (req, res) => {
         }
     });
 
-    res.status(200).json(foundPost);
+    res.status(200).json(post);
 });
 
 
@@ -255,11 +255,11 @@ const verifyPassword = asyncHandler(async (req, res) => {
     const { postId } = req.params;
     const { postPassword } = req.body;
 
-    const foundPost = await prisma.post.findUniqueOrThrow({
+    const post = await prisma.post.findUniqueOrThrow({
         where: { id: postId }
     });
 
-    if (foundPost.password !== postPassword) {
+    if (post.password !== postPassword) {
         throw new CustomError(ErrorCodes.Unauthorized, "비밀번호가 틀렸습니다.");
     }
 
@@ -270,7 +270,6 @@ const verifyPassword = asyncHandler(async (req, res) => {
 // 게시글 공감
 const likePost = asyncHandler(async (req, res) => {
     const { postId } = req.params;
-
     
     const post = await prisma.post.findUniqueOrThrow({
         where: { id: postId }
@@ -287,4 +286,18 @@ const likePost = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost };
+// 그룹 공개 여부 확인
+const checkPublic = asyncHandler(async (req, res) => {
+    const { postId } = req.params;
+
+    const post = await prisma.post.findUniqueOrThrow({
+        where: { id: postId }
+    });
+
+    return res.status(200).json({
+        id: post.postId,
+        isPublic: post.isPublic
+    });
+});
+
+module.exports = { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost, checkPublic };
