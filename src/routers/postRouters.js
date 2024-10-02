@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require("../middlewares/asyncHandler");
-const { createPost, postList, editPost } = require('../controllers/postController');
+const { createPost, postList, editPost, deletePost, postDetail } = require('../controllers/postController');
 const router = express.Router();
 
 router.post("groups/:groupId/posts", asyncHandler(createPost));
@@ -436,4 +436,94 @@ router.delete("posts/:postId", asyncHandler(deletePost));
  *                 message:
  *                   type: string
  *                   example: "존재하지 않습니다"
+ */
+
+
+router.get("posts/:postId", asyncHandler(postDetail));
+/**
+ * @swagger
+ * /api/posts/{postId}:
+ *   get:
+ *     tags: [Post]
+ *     summary: 게시글 상세 정보 조회
+ *     description: 특정 게시글의 상세 정보를 조회합니다.
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           example: 123
+ *         description: 게시글 ID
+ *     responses:
+ *       200:
+ *         description: 성공적으로 게시글 정보를 조회했습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 123
+ *                 groupId:
+ *                   type: integer
+ *                   example: 123
+ *                 nickname:
+ *                   type: string
+ *                   example: "string"
+ *                 title:
+ *                   type: string
+ *                   example: "게시글 제목"
+ *                 content:
+ *                   type: string
+ *                   example: "게시글 내용"
+ *                 imageURL:
+ *                   type: string
+ *                   example: "https://your-image-url.jpg"
+ *                 tags:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: [ "#tag1", "#tag2" ]
+ *                 location:
+ *                   type: string
+ *                   example: "서울"
+ *                 moment:
+ *                   type: string
+ *                   format: date
+ *                   example: "2024-02-21"
+ *                 isPublic:
+ *                   type: boolean
+ *                   example: true
+ *                 likeCount:
+ *                   type: integer
+ *                   example: 0
+ *                 commentCount:
+ *                   type: integer
+ *                   example: 0
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-02-22T07:47:49.803Z"
+ *       400:
+ *         description: 잘못된 요청입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "잘못된 요청입니다."
+ *       404:
+ *         description: 존재하지 않는 데이터입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "존재하지 않는 데이터입니다."
  */
