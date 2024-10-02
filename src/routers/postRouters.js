@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require("../middlewares/asyncHandler");
-const { createPost, postList, editPost, deletePost, postDetail } = require('../controllers/postController');
+const { createPost, postList, editPost, deletePost, postDetail, verifyPassword } = require('../controllers/postController');
 const router = express.Router();
 
 router.post("groups/:groupId/posts", asyncHandler(createPost));
@@ -526,4 +526,54 @@ router.get("posts/:postId", asyncHandler(postDetail));
  *                 message:
  *                   type: string
  *                   example: "존재하지 않는 데이터입니다."
+ */
+
+router.get("posts/:postId/verify-password", asyncHandler(verifyPassword));
+/**
+ * @swagger
+ * /api/posts/{postId}/verify-password:
+ *   post:
+ *     tags: [Post]
+ *     summary: 게시글 조회 권한 확인
+ *     description: 비밀번호를 입력하여 게시글 조회 권한을 확인합니다.
+ *     parameters:
+ *       - name: postId
+ *         in: path
+ *         required: true
+ *         description: 게시글 ID
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               postPassword:
+ *                 type: string
+ *                 description: 게시글 비밀번호
+ *             required:
+ *               - postPassword
+ *     responses:
+ *       200:
+ *         description: 비밀번호가 확인되었습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 비밀번호가 확인되었습니다
+ *       401:
+ *         description: 비밀번호가 일치하지 않습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: 비밀번호가 일치하지 않습니다.
  */

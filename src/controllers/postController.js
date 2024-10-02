@@ -249,4 +249,22 @@ const postDetail = asyncHandler(async (req, res) => {
     res.status(200).json(foundPost);
 });
 
-module.exports = { createPost, postList, editPost, deletePost, postDetail };
+
+// 게시글 조회 권한 확인
+const verifyPassword = asyncHandler(async (req, res) => {
+    const { postId } = req.params;
+    const { postPassword } = req.body;
+
+    const foundPost = await prisma.post.findUniqueOrThrow({
+        where: { id: postId }
+    });
+
+    if (foundPost.password !== postPassword) {
+        throw new CustomError(ErrorCodes.Unauthorized, "비밀번호가 틀렸습니다.");
+    }
+
+    res.status(200).json({ message: "비밀번호가 확인되었습니다." })
+
+})
+
+module.exports = { createPost, postList, editPost, deletePost, postDetail, verifyPassword };
