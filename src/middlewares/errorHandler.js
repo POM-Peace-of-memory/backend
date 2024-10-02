@@ -1,3 +1,5 @@
+const { PrismaClient } = require('@prisma/client');
+
 // 에러 코드 및 기본 메세지
 // 필요에 따라 추가 및 수정
 const ErrorCodes = {
@@ -46,13 +48,18 @@ const errorHandler = (err, req, res, next) => {
         });
     }
     
-    // 프리즈마 에러일 경우
-    // if (err instanceof StructError || err instanceof Prisma.PrismaClientValidationError) {
-    //     res.status(400).json({ message: '잘못된 요청입니다.' });
-    
+    if (err instanceof Error) {
+        if (err.name === 'PrismaClientValidationError') {
+            return res.status(400).json({ message: err.message });
+        } else if (err.name === 'PrismaClientKnownRequestError') {
+            if (err.code === 'P2025') {
+                return res.status(404).json({ message: err.message });
+            }
+        }
+    }
 
     // 예상치 못한 에러의 경우
-    res.status(500).json({
+    return res.status(500).json({
         message: "예상치 못한 오류가 발생했습니다"
     });
 };
