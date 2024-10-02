@@ -265,6 +265,26 @@ const verifyPassword = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: "비밀번호가 확인되었습니다." })
 
-})
+});
 
-module.exports = { createPost, postList, editPost, deletePost, postDetail, verifyPassword };
+// 게시글 공감
+const likePost = asyncHandler(async (req, res) => {
+    const { postId } = req.params;
+
+    
+    const post = await prisma.post.findUniqueOrThrow({
+        where: { id: postId }
+    });
+    
+    const updatedPost = await prisma.post.update({
+        where: { id: postId },
+        data: { likeCount: post.likeCount + 1 },
+    });
+
+    return res.status(200).json({
+        message: "게시글 공감하기 성공",
+        likeCount: updatedPost.likeCount,
+    });
+});
+
+module.exports = { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost };

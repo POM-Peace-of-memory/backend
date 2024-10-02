@@ -1,6 +1,6 @@
 const express = require('express');
 const asyncHandler = require("../middlewares/asyncHandler");
-const { createPost, postList, editPost, deletePost, postDetail, verifyPassword } = require('../controllers/postController');
+const { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost } = require('../controllers/postController');
 const router = express.Router();
 
 router.post("groups/:groupId/posts", asyncHandler(createPost));
@@ -11,6 +11,13 @@ router.post("groups/:groupId/posts", asyncHandler(createPost));
  *     tags: [Post]
  *     summary: 게시글 등록
  *     description: 주어진 그룹에 게시글을 생성합니다.
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         description: 그룹 ID
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -528,7 +535,8 @@ router.get("posts/:postId", asyncHandler(postDetail));
  *                   example: "존재하지 않는 데이터입니다."
  */
 
-router.get("posts/:postId/verify-password", asyncHandler(verifyPassword));
+
+router.post("posts/:postId/verify-password", asyncHandler(verifyPassword));
 /**
  * @swagger
  * /api/posts/{postId}/verify-password:
@@ -577,3 +585,47 @@ router.get("posts/:postId/verify-password", asyncHandler(verifyPassword));
  *                   type: string
  *                   example: 비밀번호가 일치하지 않습니다.
  */
+
+
+router.post("posts/:postId/like", asyncHandler(likePost));
+/**
+ * @swagger
+ * /api/posts/{postId}/like:
+ *   post:
+ *     tags: [Post]
+ *     summary: 게시글 공감
+ *     description: 주어진 게시글에 공감(좋아요)를 추가합니다.
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         description: 게시글 ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: 게시글에 공감했습니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "게시글에 공감했습니다"
+ *                 likeCount:
+ *                   type: integer
+ *                   example: 10
+ *       404:
+ *         description: 존재하지 않는 게시글입니다.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "존재하지 않는 게시글입니다"
+ */
+
+
