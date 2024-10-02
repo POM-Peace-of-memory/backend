@@ -9,7 +9,7 @@ const ErrorCodes = {
     },
     NotFound: {
         code: 404,
-        message: "리소스를 찾을 수 없습니다"
+        message: "존재하지 않습니다"
     },
     InternalServerError: {
         code: 500,
