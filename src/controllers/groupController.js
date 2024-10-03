@@ -49,19 +49,20 @@ const getGroups = async (req, res) => {
     // 정렬 조건
     let orderBy;
     switch (sortBy) {
-      case 'mostPosted':
-        orderBy = { postCount: 'desc' };
-        break;
-      case 'mostLiked':
-        orderBy = { likeCount: 'desc' };
-        break;
-      case 'mostBadge':
-        orderBy = { badgesCount: 'desc' };
-        break;
-      case 'latest':
-      default:
+        case 'mostPosted':
+            orderBy = { posts: {_count: 'desc',}};
+            break;
+        case 'mostLiked':
+            orderBy = {groupLikes: {_count: 'desc',}};
+            break;
+        case 'mostBadge':
+            orderBy = {groupBadges: {_count: 'desc',}};
+            break;
+        case 'latest':
+        default:
         orderBy = { createdAt: 'desc' };
     }
+
 
     // 이름과 소개에 키워드가 포함되는 조건
     const where = {
