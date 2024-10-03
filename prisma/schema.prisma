@@ -43,7 +43,7 @@ model Post {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  group        Group      @relation(fields: [groupId], references: [id])
+  group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   postLikes    PostLike[]
   comments     Comment[]
@@ -57,7 +57,7 @@ model GroupLike {
   groupId   String
   createdAt DateTime @default(now())
 
-  group     Group    @relation(fields: [groupId], references: [id])
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([groupId])
 }
@@ -67,7 +67,7 @@ model PostLike {
   postId    String
   createdAt DateTime @default(now())
 
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
 }
@@ -81,7 +81,7 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
 }
@@ -100,8 +100,8 @@ model PostTag {
   postId String
   tagId  String
 
-  post   Post   @relation(fields: [postId], references: [id])
-  tag    Tag    @relation(fields: [tagId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([postId, tagId])
   @@index([postId])
@@ -113,8 +113,8 @@ model GroupBadge {
   groupId String
   badgeId String
   
-  group   Group  @relation(fields: [groupId], references: [id])
-  badge   Badge  @relation(fields: [badgeId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  badge   Badge  @relation(fields: [badgeId], references: [id], onDelete: Cascade)
 
   @@id([groupId, badgeId])
   @@index([groupId])
