@@ -36,13 +36,10 @@ const uploadToS3 = async (file) => {
   return `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`;
 };
 
+const multerMiddleware = upload.single('image')
+
 // 이미지 업로드 핸들러
 const imageUpload = async (req, res) => {
-  upload.single('image')(req, res, async (err) => {
-    if (err) {
-      throw new CustomError(ErrorCodes.BadRequest, '파일 업로드 중 오류가 발생했습니다.');
-    }
-
     // upload.single에서 받아 req.file로 전달
     const file = req.file;
 
@@ -55,7 +52,7 @@ const imageUpload = async (req, res) => {
     res.json({
       imageUrl: fileUrl
     });
-  });
 };
 
-module.exports = imageUpload;
+
+module.exports = {imageUpload, multerMiddleware};
