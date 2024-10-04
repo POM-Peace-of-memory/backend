@@ -278,7 +278,7 @@ router.patch("/posts/:postId", asyncHandler(editPost));
  *         required: true
  *         description: 게시글 ID
  *         schema:
- *           type: number
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -392,7 +392,7 @@ router.delete("/posts/:postId", asyncHandler(deletePost));
  *         required: true
  *         description: 게시글 ID
  *         schema:
- *           type: integer
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -459,7 +459,7 @@ router.get("/posts/:postId", asyncHandler(postDetail));
  *         name: postId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *           example: 123
  *         description: 게시글 ID
  *     responses:
@@ -550,7 +550,7 @@ router.post("/posts/:postId/verify-password", asyncHandler(verifyPassword));
  *         required: true
  *         description: 게시글 ID
  *         schema:
- *           type: integer
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -601,7 +601,7 @@ router.post("/posts/:postId/like", asyncHandler(likePost));
  *         required: true
  *         description: 게시글 ID
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: 게시글에 공감했습니다.
@@ -643,7 +643,7 @@ router.get("/posts/:postId/is-public", asyncHandler(checkPublic));
  *         required: true
  *         description: 확인할 게시글의 ID
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: 게시글의 공개 여부가 성공적으로 확인되었습니다.

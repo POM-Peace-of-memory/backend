@@ -109,6 +109,7 @@ const createPost = async (req, res) => {
     });
 };
 
+
 // 게시글 목록 조회
 const postList = async (req, res) => {
     const { groupId } = req.params;
@@ -218,44 +219,50 @@ const postList = async (req, res) => {
 };
 
 
-
 // 게시글 수정
 const editPost = async (req, res) => {
     const { postId } = req.params;
-
+    
     // 유효성 검사
-    assert(req.body, PatchPost);
+    s.assert(req.body, PatchPost);
 
     // 비밀번호 제외 나머지 정보 저장
-    const { postPassword, ...updateData } = req.body;
+    const { postPassword, ...updatedData } = req.body;
 
     // postId에 해당하는 게시글 존재 여부 확인
-    const post = await prisma.post.findUniqueOrThrow({
+    const oldPost = await prisma.post.findUniqueOrThrow({
         where: { id: postId }
     });
 
     // 게시글 비밀번호 확인
-    if (post.postPassword !== postPassword) {
+    const passwordMatch = await postPassword === oldPost.postPassword;
+    if (!passwordMatch) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
-    }
+    };
 
     const updatedPost = await prisma.post.update({
         where: { id: postId },
-        data: updateData,
+        data: updatedData,
         select: {
             id: true,
             groupId: true,
             nickname: true,
             title: true,
             content: true,
-            imageURL: true,
-            tags: true,
+            imageUrl: true,
             location: true,
-            moment: formatStringToDate(moment),
+            moment: true,
             isPublic: true,
-            likeCount: true,
-            commentCount: true,
-            createdAt: true
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            content: true
+                        }
+                    }
+                }
+            },
+            createdAt: true,
         }
     });
     res.status(200).json(updatedPost);
@@ -267,11 +274,11 @@ const deletePost = async (req, res) => {
     const { postId } = req.params;
     const { postPassword } = req.body;
 
-    const post = await prisma.post.findUniqueOrThrow({
+    const oldPost = await prisma.post.findUniqueOrThrow({
         where: { id: postId }
     });
 
-    if (post.postPassword !== postPassword) {
+    if (oldPost.postPassword !== postPassword) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
     };
 
@@ -290,18 +297,28 @@ const postDetail = async (req, res) => {
         where: { id: postId },
         select: {
             id: true,
-            groupId: true,
             nickname: true,
             title: true,
-            content: true,
-            imageURL: true,
-            tags: true,
-            location: true,
-            moment: formatDateToString(moment),
+            imageUrl: true,
             isPublic: true,
-            likeCount: true,
-            commentCount: true,
-            createdAt: formatDateToString(createdAt)
+            moment: true,
+            createdAt: true,
+            _count: {
+                select: {
+                    postLikes: true,   // 게시글의 좋아요 수
+                    comments: true,    // 댓글 수
+                },
+            },
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            content: true, // 태그 내용을 가져옴
+                        },
+                    },
+                },
+            },
+            location: true,
         }
     });
 
@@ -318,7 +335,7 @@ const verifyPassword = async (req, res) => {
         where: { id: postId }
     });
 
-    if (post.password !== postPassword) {
+    if (post.postPassword !== postPassword) {
         throw new CustomError(ErrorCodes.Unauthorized, "비밀번호가 틀렸습니다.");
     }
 
@@ -334,14 +351,12 @@ const likePost = async (req, res) => {
         where: { id: postId }
     });
     
-    const updatedPost = await prisma.post.update({
-        where: { id: postId },
-        data: { likeCount: post.likeCount + 1 },
+    await prisma.postLike.create({
+        data: { postId },
     });
 
     return res.status(200).json({
-        message: "게시글 공감하기 성공",
-        likeCount: updatedPost.likeCount,
+        message: "게시글 공감하기 성공"
     });
 };
 
@@ -354,7 +369,7 @@ const checkPublic = async (req, res) => {
     });
 
     return res.status(200).json({
-        id: post.postId,
+        id: post.id,
         isPublic: post.isPublic
     });
 };
