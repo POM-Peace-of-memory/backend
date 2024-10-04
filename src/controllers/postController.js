@@ -1,20 +1,19 @@
-const express = require('express');
-const asyncHandler = require('../middlewares/asyncHandler');
-const { ErrorCodes, CustomError } = require("../middlewares/errorHandler");
-const { assert } = require('superstruct');
-const { CreatePost, PatchPost } = require('../struct/postStruct');
-const { formatStringToDate } = require('../util/dateFormat');
-const { create } = require('superstruct');
 const { PrismaClient } = require('@prisma/client');
-const { formatDateToString, formatStringToDate } = require('../utill/dateFormat');
+const s = require('superstruct');
+const bcrypt = require('bcrypt');
+const { ErrorCodes, CustomError } = require("../middlewares/errorHandler");
+const { CreatePost, PatchPost } = require('../struct/postStruct');
+const { formatDateToString, formatStringToDate } = require('../util/dateFormat');
+const { hashPassword, comparePassword } = require("../util/passwordUtils.js");
+
 const prisma = new PrismaClient();
 
 // 게시글 등록
-const createPost = asyncHandler(async (req, res) => {
+const createPost = async (req, res) => {
     const { groupId } = req.params;
     
     // 게시글 유효성 검사
-    assert(req.body, CreatePost);
+    s.assert(req.body, CreatePost);
 
     const {
         nickname, title, content, postPassword, groupPassword,
@@ -23,16 +22,17 @@ const createPost = asyncHandler(async (req, res) => {
 
     // groupId에 해당하는 그룹 존재 여부 확인
     const group = await prisma.group.findUniqueOrThrow({
-        where: {id: groupId},
+        where: { id: groupId },
     });
 
     // 그룹 비밀번호 확인
-    if (group.password !== groupPassword) {
+    const passwordMatch = await bcrypt.compare(groupPassword, group.password);
+    if (!passwordMatch) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
-    }
+    };
 
     // 게시글 생성
-    const post = await prisma.post.create({
+    const newPost = await prisma.post.create({
         data: {
             nickname,
             title,
@@ -41,7 +41,16 @@ const createPost = asyncHandler(async (req, res) => {
             imageUrl,
             location,
             moment: formatStringToDate(moment),
-            tags,
+            tags: {
+                create: tags.map(tag => ({
+                    tag: {
+                        connectOrCreate: {
+                            where: { content: tag },  // tag 이름을 기준으로 태그가 이미 있으면 연결하고, 없으면 새로 생성
+                            create: { content: tag }, // 태그가 없을 경우 생성
+                        },
+                    },
+                })),
+            },
             isPublic,
             groupId,
         },
@@ -53,18 +62,16 @@ const createPost = asyncHandler(async (req, res) => {
             title: true,
             content: true,
             imageUrl: true,
-            tags: true,
             location: true,
             moment: true,
             isPublic: true,
-            likeCount: {
+            tags: {
                 select: {
-                    id: true,
-                }
-            },
-            commentCount: {
-                select: {
-                    id: true,
+                    tag: {
+                        select: {
+                            content: true
+                        }
+                    }
                 }
             },
             createdAt: true,
@@ -73,24 +80,38 @@ const createPost = asyncHandler(async (req, res) => {
 
     // 좋아요 수 계산
     const likeCount = await prisma.postLike.count({
-        where: { postId: post.id }
+        where: { postId: newPost.id }
     });
 
     // 댓글 수 계산
     const commentCount = await prisma.comment.count({
-        where: { postId: post.id }
+        where: { postId: newPost.id }
     });
 
+    // 태그를 문자열 배열로 변환
+    const tagsContent = newPost.tags.map(tag => tag.tag.content);
+    
+    // 최종 응답
     res.status(201).json({
-        ...newPost,
+        id: newPost.id,
+        groupId: newPost.groupId,
+        nickname: newPost.nickname,
+        title: newPost.title,
+        content: newPost.content,
+        imageUrl: newPost.imageUrl,
+        tags: tagsContent,
+        location: newPost.location,
+        moment: formatDateToString(newPost.moment), // 'YYYY-MM-DD' 형식으로 변환
+        isPublic: newPost.isPublic,
         likeCount,
-        commentCount
+        commentCount,
+        createdAt: formatDateToString(newPost.createdAt)
     });
-});
+};
 
 
 // 게시글 목록 조회
-const postList = asyncHandler(async (req, res) => {
+const postList = async (req, res) => {
     const { groupId } = req.params;
 
     // query parameter default 값 설정
@@ -157,11 +178,11 @@ const postList = asyncHandler(async (req, res) => {
         totalItemCount,
         data: posts,
     });
-});
+};
 
 
 // 게시글 수정
-const editPost = asyncHandler(async (req, res) => {
+const editPost = async (req, res) => {
     const { postId } = req.params;
 
     // 유효성 검사
@@ -200,11 +221,11 @@ const editPost = asyncHandler(async (req, res) => {
         }
     });
     res.status(200).json(updatedPost);
-})
+};
 
 
 // 게시글 삭제
-const deletePost = asyncHandler(async (req, res) => {
+const deletePost = async (req, res) => {
     const { postId } = req.params;
     const { postPassword } = req.body;
 
@@ -221,10 +242,10 @@ const deletePost = asyncHandler(async (req, res) => {
     });
 
     res.status(200).json({ message: "게시글 삭제 성공" });    
-});
+};
 
 // 게시글 상세 정보 조회
-const postDetail = asyncHandler(async (req, res) => {
+const postDetail = async (req, res) => {
     const { postId } = req.params;
 
     const post = await prisma.post.findUniqueOrThrow({
@@ -247,11 +268,11 @@ const postDetail = asyncHandler(async (req, res) => {
     });
 
     res.status(200).json(post);
-});
+};
 
 
 // 게시글 조회 권한 확인
-const verifyPassword = asyncHandler(async (req, res) => {
+const verifyPassword = async (req, res) => {
     const { postId } = req.params;
     const { postPassword } = req.body;
 
@@ -265,10 +286,10 @@ const verifyPassword = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: "비밀번호가 확인되었습니다." })
 
-});
+};
 
 // 게시글 공감
-const likePost = asyncHandler(async (req, res) => {
+const likePost = async (req, res) => {
     const { postId } = req.params;
     
     const post = await prisma.post.findUniqueOrThrow({
@@ -284,10 +305,10 @@ const likePost = asyncHandler(async (req, res) => {
         message: "게시글 공감하기 성공",
         likeCount: updatedPost.likeCount,
     });
-});
+};
 
 // 그룹 공개 여부 확인
-const checkPublic = asyncHandler(async (req, res) => {
+const checkPublic = async (req, res) => {
     const { postId } = req.params;
 
     const post = await prisma.post.findUniqueOrThrow({
@@ -298,6 +319,15 @@ const checkPublic = asyncHandler(async (req, res) => {
         id: post.postId,
         isPublic: post.isPublic
     });
-});
+};
 
-module.exports = { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost, checkPublic };
+module.exports = {
+    createPost,
+    postList,
+    editPost,
+    deletePost,
+    postDetail,
+    verifyPassword,
+    likePost,
+    checkPublic
+};

@@ -3,6 +3,8 @@ const router = express.Router();
 const testRouters = require("./testRouters")
 const imageRouters = require("./imageRouters")
 const groupRouters = require("./groupRouters")
+const postRouters = require("./postRouters")
+
 //라우터 패스 
 /**
  * @swagger
@@ -26,5 +28,13 @@ router.use("", imageRouters);
  *   description: group API 관련 엔드포인트
  */
 router.use("", groupRouters);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Post
+ *   description: post API 관련 엔드포인트
+ */
+router.use("", postRouters);
 
 module.exports = router;

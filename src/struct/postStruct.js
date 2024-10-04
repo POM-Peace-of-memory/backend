@@ -1,8 +1,8 @@
-import * as s from 'superstruct';
+const s = require('superstruct');
 
 const Hashtag = s.refine(s.string(), 'Hashtag', (value) => value.startsWith('#'));
 
-export const CreatePost = s.object({
+const CreatePost = s.object({
     nickname: s.string(),
     title: s.string(),
     content: s.string(),
@@ -15,4 +15,6 @@ export const CreatePost = s.object({
     isPublic: s.boolean()
 })
 
-export const PatchPost = s.partial(CreatePost);
+const PatchPost = s.partial(CreatePost);
+
+module.exports = { CreatePost, PatchPost };

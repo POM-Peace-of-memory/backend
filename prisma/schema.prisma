@@ -42,6 +42,7 @@ model Post {
   moment       DateTime
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  isPublic     Boolean    @default(true)
 
   group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
 

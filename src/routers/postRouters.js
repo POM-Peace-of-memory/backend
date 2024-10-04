@@ -1,9 +1,9 @@
 const express = require('express');
-const asyncHandler = require("../middlewares/asyncHandler");
 const { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost, checkPublic } = require('../controllers/postController');
+const asyncHandler = require("../middlewares/asyncHandler");
 const router = express.Router();
 
-router.post("groups/:groupId/posts", asyncHandler(createPost));
+router.post('/groups/:groupId/posts', asyncHandler(createPost));
 /**
  * @swagger
  * /api/groups/{groupId}/posts:
@@ -17,7 +17,7 @@ router.post("groups/:groupId/posts", asyncHandler(createPost));
  *         required: true
  *         description: 그룹 ID
  *         schema:
- *           type: integer
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -40,7 +40,7 @@ router.post("groups/:groupId/posts", asyncHandler(createPost));
  *               groupPassword:
  *                 type: string
  *                 example: "groupPassword123"
- *               imageURL:
+ *               imageUrl:
  *                 type: string
  *                 example: "https://example.com/image.jpg"
  *               tags:
@@ -142,7 +142,7 @@ router.post("groups/:groupId/posts", asyncHandler(createPost));
  */
 
 
-router.get("groups/:groupId/posts", asyncHandler(postList));
+router.get("/groups/:groupId/posts", asyncHandler(postList));
 /**
  * @swagger
  * /api/groups/{groupId}/posts:
@@ -264,7 +264,7 @@ router.get("groups/:groupId/posts", asyncHandler(postList));
  */
 
 
-router.patch("posts/:postId", asyncHandler(editPost));
+router.patch("/posts/:postId", asyncHandler(editPost));
 /**
  * @swagger
  * /api/posts/{postId}:
@@ -378,7 +378,7 @@ router.patch("posts/:postId", asyncHandler(editPost));
  */
 
 
-router.delete("posts/:postId", asyncHandler(deletePost));
+router.delete("/posts/:postId", asyncHandler(deletePost));
 /**
  * @swagger
  * /api/posts/{postId}:
@@ -446,7 +446,7 @@ router.delete("posts/:postId", asyncHandler(deletePost));
  */
 
 
-router.get("posts/:postId", asyncHandler(postDetail));
+router.get("/posts/:postId", asyncHandler(postDetail));
 /**
  * @swagger
  * /api/posts/{postId}:
@@ -536,7 +536,7 @@ router.get("posts/:postId", asyncHandler(postDetail));
  */
 
 
-router.post("posts/:postId/verify-password", asyncHandler(verifyPassword));
+router.post("/posts/:postId/verify-password", asyncHandler(verifyPassword));
 /**
  * @swagger
  * /api/posts/{postId}/verify-password:
@@ -587,7 +587,7 @@ router.post("posts/:postId/verify-password", asyncHandler(verifyPassword));
  */
 
 
-router.post("posts/:postId/like", asyncHandler(likePost));
+router.post("/posts/:postId/like", asyncHandler(likePost));
 /**
  * @swagger
  * /api/posts/{postId}/like:
@@ -629,7 +629,7 @@ router.post("posts/:postId/like", asyncHandler(likePost));
  */
 
 
-router.get("posts/:postId/is-public", asyncHandler(checkPublic));
+router.get("/posts/:postId/is-public", asyncHandler(checkPublic));
 /**
  * @swagger
  * /api/posts/{postId}/is-public:
@@ -669,3 +669,5 @@ router.get("posts/:postId/is-public", asyncHandler(checkPublic));
  *                   type: string
  *                   example: "존재하지 않는 데이터입니다."
  */
+
+module.exports = router;
