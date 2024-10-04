@@ -109,7 +109,6 @@ const createPost = async (req, res) => {
     });
 };
 
-
 // 게시글 목록 조회
 const postList = async (req, res) => {
     const { groupId } = req.params;
@@ -120,7 +119,7 @@ const postList = async (req, res) => {
         pageSize = 8,
         sortBy = 'latest',
         keyword = '',
-        isPublic = 'true'
+        isPublic = 'true',
     } = req.query;
 
     // groupId에 해당하는 그룹 존재 여부 확인
@@ -128,57 +127,96 @@ const postList = async (req, res) => {
         where: { id: groupId },
     });
 
+    // isPublic 문자열을 boolean으로 변환
+    const isPublicValue = isPublic === 'true';
+
     // 게시글 keyword 포함 및 공개 조건 설정
     const where = {
         groupId: group.id,
-        ...(isPublic !== undefined && { isPublic }),
+        ...(isPublic !== undefined && { isPublic: isPublicValue }),
         ...(keyword && {
             OR: [
                 { title: { contains: keyword } },
-                { tags: { some: { name: { contains: keyword } } } },
+                {
+                    tags: {
+                        some: {
+                            tag: {
+                                content: {
+                                    contains: keyword,
+                                },
+                            },
+                        },
+                    },
+                },
             ],
         }),
     };
-    
-    // 정렬 조건 설정
-    const orderBy = sortBy === 'mostLiked' ? { likeCount: 'desc' } :
-                    sortBy === 'mostCommented' ? { commentCount: 'desc' } :
-                    { createdAt: 'desc' };
 
     // 게시글 조회
-    const [totalItemCount, posts] = await Promise.all([
-        prisma.post.count({ where }),
-        prisma.post.findMany({
-            where,
-            orderBy,
-            skip: (page - 1) * pageSize,
-            take: pageSize,
-            select: {
-                id: true,
-                nickname: true,
-                title: true,
-                imageUrl: true,
-                isPublic: true,
-                likeCount: true,
-                commentCount: true,
-                moment: formatDateToString(moment),
-                tags: true,
-                location: true,
-                createdAt: formatDateToString(createdAt),
+    const totalItemCount = await prisma.post.count({
+        where,
+    });
+
+    const posts = await prisma.post.findMany({
+        where,
+        orderBy: {
+            createdAt: 'desc',
+        },
+        skip: (page - 1) * pageSize,
+        take: Number(pageSize),
+        select: {
+            id: true,
+            nickname: true,
+            title: true,
+            imageUrl: true,
+            isPublic: true,
+            moment: true,
+            createdAt: true,
+            _count: {
+                select: {
+                    postLikes: true,   // 게시글의 좋아요 수
+                    comments: true,    // 댓글 수
+                },
             },
-        }),
-    ]);
+            tags: {
+                select: {
+                    tag: {
+                        select: {
+                            content: true, // 태그 내용을 가져옴
+                        },
+                    },
+                },
+            },
+            location: true,
+        },
+    });
 
     // 페이지 계산
     const totalPages = Math.ceil(totalItemCount / pageSize);
 
+    // 포맷팅 후 반환
+    const formattedPosts = posts.map(post => ({
+        id: post.id,
+        nickname: post.nickname,
+        title: post.title,
+        imageUrl: post.imageUrl,
+        tags: post.tags.map(tag => tag.tag.content), // 태그를 문자열 배열로 변환
+        location: post.location,
+        moment: formatDateToString(post.moment), // 포맷팅된 moment
+        isPublic: post.isPublic,
+        likeCount: post._count.postLikes, // 좋아요 수
+        commentCount: post._count.comments, // 댓글 수
+        createdAt: post.createdAt, // createdAt 그대로 반환
+    }));
+
     res.status(200).json({
-        currentPage: page,
+        currentPage: Number(page),
         totalPages,
         totalItemCount,
-        data: posts,
+        data: formattedPosts,
     });
 };
+
 
 
 // 게시글 수정
