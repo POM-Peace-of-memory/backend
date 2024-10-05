@@ -38,6 +38,12 @@ router.use("", groupRouters);
  */
 router.use("", postRouters);
 
+/**
+ * @swagger
+ * tags: 
+ *   name: Comment
+ *   description: post API 관련 엔드포인트
+ */
 router.use("", commentRouters);
 
 module.exports = router;

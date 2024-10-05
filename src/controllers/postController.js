@@ -105,7 +105,7 @@ const createPost = async (req, res) => {
         isPublic: newPost.isPublic,
         likeCount,
         commentCount,
-        createdAt: formatDateToString(newPost.createdAt)
+        createdAt: newPost.createdAt
     });
 };
 
