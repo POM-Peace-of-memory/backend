@@ -22,7 +22,11 @@ const ErrorCodes = {
     Forbidden: {
         code: 403,
         message: "접근 권한이 없습니다"
-    }
+    },
+    Conflict: {
+        code: 409,
+        message: "충돌이 발생했습니다"
+    },
 };
 
 // 커스텀 에러 클래스
@@ -61,12 +65,12 @@ const errorHandler = (err, req, res, next) => {
             case 'P2002':
                 // 고유 제약 조건 위반 (중복된 값)
                 return res.status(ErrorCodes.Conflict.code).json({
-                    message: "중복된 값이 존재합니다",
+                    message: ErrorCodes.Conflict.message,
                 });
             case 'P2025':
                 // 레코드를 찾을 수 없음
                 return res.status(ErrorCodes.NotFound.code).json({
-                    message: "요청한 리소스를 찾을 수 없습니다",
+                    message: ErrorCodes.NotFound.message,
                 });
             // 다른 에러 코드에 대한 처리 추가 가능
             default:
