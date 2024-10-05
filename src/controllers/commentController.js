@@ -2,7 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const s = require('superstruct');
 const { ErrorCodes, CustomError } = require("../middlewares/errorHandler");
 const { CreateComment, UpdateComment } = require("../struct/commentStruct");
-const { formatDateToString, formatStringToDate } = require('../util/dateFormat');
 
 const prisma = new PrismaClient();
 
@@ -14,7 +13,7 @@ const createComment = async (req, res) => {
 
     const { nickname, content, password } = req.body;
 
-    const oldPost = await prisma.post.findUniqueOrThrow({
+    const Post = await prisma.post.findUniqueOrThrow({
         where: { id: postId },
     });
 
@@ -38,7 +37,7 @@ const createComment = async (req, res) => {
         id: newComment.id,
         nickname: newComment.nickname,
         content: newComment.content,
-        createdAt: formatDateToString(newComment.createdAt)
+        createdAt: newComment.createdAt
     });
 };
 
@@ -54,7 +53,7 @@ const commentList = async (req, res) => {
     } = req.query;
 
     // postId에 해당하는 게시글 존재 여부 확인
-    const oldPost = await prisma.post.findUniqueOrThrow({
+    const Post = await prisma.post.findUniqueOrThrow({
         where: { id: postId },
     });
 
@@ -86,7 +85,7 @@ const commentList = async (req, res) => {
         id: comment.id,
         nickname: comment.nickname,
         content: comment.content,
-        createdAt: formatDateToString(comment.createdAt)
+        createdAt: comment.createdAt
     }));
 
     res.status(200).json({
@@ -109,12 +108,13 @@ const updateComment = async (req, res) => {
     const { password, ...updatedData } = req.body;
 
     // commentId에 해당하는 댓글 존재 여부 확인
-    const oldComment = await prisma.comment.findUniqueOrThrow({
+    const Comment = await prisma.comment.findUniqueOrThrow({
         where: { id: commentId }
     });
 
     // 댓글 비밀번호 확인
-    const passwordMatch = await password === oldComment.password;
+    const passwordMatch = (password == Comment.password);
+
     if (!passwordMatch) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다.");
     };

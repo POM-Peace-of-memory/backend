@@ -105,7 +105,7 @@ const createPost = async (req, res) => {
         isPublic: newPost.isPublic,
         likeCount,
         commentCount,
-        createdAt: formatDateToString(newPost.createdAt)
+        createdAt: newPost.createdAt
     });
 };
 
@@ -244,8 +244,9 @@ const editPost = async (req, res) => {
     }
 
     // 비밀번호를 비교하여 불일치시 수정 x
-    const isPasswordValid = await comparePassword(postPassword, group.password);
-        
+    // const isPasswordValid = await comparePassword(postPassword, post.postPassword);
+    const isPasswordValid = (postPassword == post.postPassword)
+
     if (!isPasswordValid) {
         throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
     }
