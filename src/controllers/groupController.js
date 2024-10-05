@@ -63,7 +63,6 @@ const getGroups = async (req, res) => {
         orderBy = { createdAt: 'desc' };
     }
 
-
     // 이름과 소개에 키워드가 포함되는 조건
     const where = {
         OR: [
@@ -125,16 +124,22 @@ const updateGroup = async (req, res) => {
    
     const { password, ...updateData } = req.body;
 
-    // 그룹 read
+    // 해당 그룹 가져옴 
     const group = await prisma.group.findUnique({ where: { id: groupId } });
  
     if (!group) {
         throw new CustomError(ErrorCodes.NotFound);
     }
 
-    // 비밀번호가 있다면 암호화
-    if (password) {
-        updateData.password = await hashPassword(password);
+    if(!password){
+        throw new CustomError(ErrorCodes.BadRequest);
+    }
+
+    // 비밀번호를 비교하여 불일치시 수정 x
+    const isPasswordValid = await comparePassword(password, group.password);
+        
+    if (!isPasswordValid) {
+        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
     }
 
     // 데이터 베이스 업데이트
@@ -170,7 +175,7 @@ const deleteGroup = async (req, res) => {
     const isPasswordValid = await comparePassword(password, group.password);
         
     if (!isPasswordValid) {
-     throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
+        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
     }
 
     await prisma.group.delete({ where: { id: groupId } });
