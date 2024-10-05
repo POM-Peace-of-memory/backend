@@ -223,26 +223,57 @@ const postList = async (req, res) => {
 const editPost = async (req, res) => {
     const { postId } = req.params;
     
-    // 유효성 검사
+    // 유효성 검사 (Superstruct를 사용한 유효성 검증)
     s.assert(req.body, PatchPost);
 
-    // 비밀번호 제외 나머지 정보 저장
-    const { postPassword, ...updatedData } = req.body;
+    // 비밀번호 및 처리가 필요한 내용 분해 할당
+    const { postPassword, tags, moment, ...updatedData } = req.body;
 
     // postId에 해당하는 게시글 존재 여부 확인
-    const oldPost = await prisma.post.findUniqueOrThrow({
+    const post = await prisma.post.findUnique({
         where: { id: postId }
     });
 
-    // 게시글 비밀번호 확인
-    const passwordMatch = await postPassword === oldPost.postPassword;
-    if (!passwordMatch) {
-        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
-    };
+    // 게시글이 존재하지 않으면 에러 발생
+    if (!post) {
+        throw new CustomError(ErrorCodes.NotFound, "게시글을 찾을 수 없습니다.");
+    }
 
+    if(!PostPassword){
+        throw new CustomError(ErrorCodes.BadRequest);
+    }
+
+    // 비밀번호를 비교하여 불일치시 수정 x
+    const isPasswordValid = await comparePassword(PostPassword, group.password);
+        
+    if (!isPasswordValid) {
+        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
+    }
+
+    // 태그 처리
+    const tagRecords = await Promise.all(
+        tags.map(async (tag) => {
+            // 태그가 이미 있으면 연결하고, 없으면 생성
+            const tagRecord = await prisma.tag.upsert({
+                where: { content: tag },
+                update: {},
+                create: { content: tag }
+            });
+            return { tagId: tagRecord.id };
+        })
+    );
+
+    // 게시글 업데이트
     const updatedPost = await prisma.post.update({
         where: { id: postId },
-        data: updatedData,
+        data: {
+            ...updatedData,
+            moment: formatStringToDate(moment), // moment 포맷을 처리하는 함수
+            tags: {
+                deleteMany: {},    // 기존 태그를 모두 삭제
+                createMany: { data: tagRecords }  // 새 태그로 업데이트
+            }
+        },
         select: {
             id: true,
             groupId: true,
@@ -262,9 +293,11 @@ const editPost = async (req, res) => {
                     }
                 }
             },
-            createdAt: true,
+            createdAt: true,    
         }
     });
+
+    // 응답 반환
     res.status(200).json(updatedPost);
 };
 
