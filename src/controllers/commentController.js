@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const s = require('superstruct');
 const { ErrorCodes, CustomError } = require("../middlewares/errorHandler");
 const { CreateComment, UpdateComment } = require("../struct/commentStruct");
+const { formatDateToString, formatStringToDate } = require('../util/dateFormat');
 
 const prisma = new PrismaClient();
 
@@ -37,7 +38,7 @@ const createComment = async (req, res) => {
         id: newComment.id,
         nickname: newComment.nickname,
         content: newComment.content,
-        createdAt: newComment.createdAt
+        createdAt: formatDateToString(newComment.createdAt)
     });
 };
 
@@ -85,7 +86,7 @@ const commentList = async (req, res) => {
         id: comment.id,
         nickname: comment.nickname,
         content: comment.content,
-        createdAt: comment.createdAt
+        createdAt: formatDateToString(comment.createdAt),
     }));
 
     res.status(200).json({
@@ -129,7 +130,15 @@ const updateComment = async (req, res) => {
             createdAt: true,
         }
     });
-    res.status(200).json(updatedComment);
+
+    const formattedComment = {
+        id: updatedComment.id,
+        nickname: updatedComment.nickname,
+        content: updatedComment.content,
+        createdAt: formatDateToString(updatedComment.createdAt),
+    };
+
+    res.status(200).json(formattedComment);
 };
 
 
