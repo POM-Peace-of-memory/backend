@@ -105,7 +105,7 @@ const createPost = async (req, res) => {
         isPublic: newPost.isPublic,
         likeCount,
         commentCount,
-        createdAt: newPost.createdAt
+        createdAt: formatDateToString(newPost.createdAt)
     });
 };
 
@@ -207,7 +207,7 @@ const postList = async (req, res) => {
         isPublic: post.isPublic,
         likeCount: post._count.postLikes, // 좋아요 수
         commentCount: post._count.comments, // 댓글 수
-        createdAt: post.createdAt, // createdAt 그대로 반환
+        createdAt: formatDateToString(post.createdAt), // createdAt 그대로 반환
     }));
 
     res.status(200).json({
@@ -294,12 +294,32 @@ const editPost = async (req, res) => {
                     }
                 }
             },
-            createdAt: true,    
+            createdAt: true,
+            _count: {
+                select: {
+                    postLikes: true,
+                    comments: true
+                }
+            },    
         }
     });
 
+    const formattedPost = {
+        id: updatedPost.id,
+        nickname: updatedPost.nickname,
+        title: updatedPost.title,
+        imageUrl: updatedPost.imageUrl,
+        tags: updatedPost.tags.map(tag => tag.tag.content), // 태그를 문자열 배열로 변환
+        location: updatedPost.location,
+        moment: formatDateToString(updatedPost.moment), // 포맷팅된 moment
+        isPublic: updatedPost.isPublic,
+        likeCount: updatedPost._count.postLikes, // 좋아요 수
+        commentCount: updatedPost._count.comments, // 댓글 수
+        createdAt: formatDateToString(updatedPost.createdAt), // createdAt 그대로 반환
+    };
+
     // 응답 반환
-    res.status(200).json(updatedPost);
+    res.status(200).json(formattedPost);
 };
 
 
@@ -356,7 +376,15 @@ const postDetail = async (req, res) => {
         }
     });
 
-    res.status(200).json(post);
+    // 포맷팅된 데이터 생성
+    const formattedPost = {
+        ...post,
+        moment: formatDateToString(post.moment),         // 포맷팅된 moment
+        createdAt: formatDateToString(post.createdAt),   // 포맷팅된 createdAt
+        tags: post.tags.map(tag => tag.tag.content),     // 태그 내용을 문자열 배열로 변환
+    };
+
+    res.status(200).json(formattedPost);
 };
 
 
