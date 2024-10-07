@@ -1,5 +1,5 @@
 const express = require('express');
-const { createPost, postList, editPost, deletePost, postDetail, verifyPassword, likePost, checkPublic } = require('../controllers/postController');
+const { createPost, postList, updatedPost, deletePost, postDetail, verifyPassword, likePost, checkPublic } = require('../controllers/postController');
 const asyncHandler = require("../middlewares/asyncHandler");
 const router = express.Router();
 
@@ -264,7 +264,7 @@ router.get("/groups/:groupId/posts", asyncHandler(postList));
  */
 
 
-router.patch("/posts/:postId", asyncHandler(editPost));
+router.patch("/posts/:postId", asyncHandler(updatedPost));
 /**
  * @swagger
  * /api/posts/{postId}:

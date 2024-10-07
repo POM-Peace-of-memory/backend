@@ -14,15 +14,15 @@ const createComment = async (req, res) => {
 
     const { nickname, content, password } = req.body;
 
-    const Post = await prisma.post.findUniqueOrThrow({
-        where: { id: postId },
-    });
+    const hashedPassword = await hashPassword(password);
+
+    await prisma.post.findUniqueOrThrow({ where: { id: postId },});
 
     const newComment = await prisma.comment.create({
         data: {
             nickname,
             content,
-            password,
+            password : hashedPassword,
             postId,
         },
         // Response 형식에 맞게 데이터 선택
@@ -54,11 +54,9 @@ const commentList = async (req, res) => {
     } = req.query;
 
     // postId에 해당하는 게시글 존재 여부 확인
-    const Post = await prisma.post.findUniqueOrThrow({
-        where: { id: postId },
-    });
+    await prisma.post.findUniqueOrThrow({ where: { id: postId },});
 
-    // 게시글 조회
+    // 댓글 개수 조회
     const totalItemCount = await prisma.comment.count({
         where: { postId: postId },
     });
@@ -109,16 +107,16 @@ const updateComment = async (req, res) => {
     const { password, ...updatedData } = req.body;
 
     // commentId에 해당하는 댓글 존재 여부 확인
-    const Comment = await prisma.comment.findUniqueOrThrow({
+    const comment = await prisma.comment.findUniqueOrThrow({
         where: { id: commentId }
     });
 
-    // 댓글 비밀번호 확인
-    const passwordMatch = (password == Comment.password);
-
-    if (!passwordMatch) {
-        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다.");
-    };
+    // 비밀번호를 비교하여 불일치시 수정 x
+    const isPasswordValid = await comparePassword(password, comment.password);
+        
+    if (!isPasswordValid) {
+        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
+    }
 
     const updatedComment = await prisma.comment.update({
         where: { id: commentId },
@@ -147,13 +145,16 @@ const deleteComment = async (req, res) => {
     const { commentId } = req.params;
     const { password } = req.body;
 
-    const oldComment = await prisma.comment.findUniqueOrThrow({
+    const comment = await prisma.comment.findUniqueOrThrow({
         where: { id: commentId }
     });
 
-    if (oldComment.password !== password) {
-        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다.");
-    };
+    // 비밀번호를 비교하여 불일치시 삭제 x
+    const isPasswordValid = await comparePassword(password, comment.password);
+        
+    if (!isPasswordValid) {
+        throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
+    }
 
     await prisma.comment.delete({
         where: { id: commentId }

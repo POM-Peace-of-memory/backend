@@ -226,6 +226,7 @@ const verifyGroupPassword = async (req, res) => {
     const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
 
     const isPasswordValid = await comparePassword(password, group.password);
+    
     if (!isPasswordValid) {
         throw new CustomError(ErrorCodes.Unauthorized, '비밀번호가 틀렸습니다.');
     }
