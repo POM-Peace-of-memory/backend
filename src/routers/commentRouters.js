@@ -14,7 +14,7 @@ router.post("/posts/:postId/comments", asyncHandler(createComment));
  * /api/posts/{postId}/comments:
  *   post:
  *     summary: 댓글 등록
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: postId
@@ -69,7 +69,7 @@ router.get("/posts/:postId/comments", asyncHandler(commentList));
  * /api/posts/{postId}/comments:
  *   get:
  *     summary: 댓글 목록 조회
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: postId
@@ -134,7 +134,7 @@ router.patch("/comments/:commentId", asyncHandler(updateComment));
  * /api/comments/{commentId}:
  *   patch:
  *     summary: 댓글 수정
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -208,7 +208,7 @@ router.delete("/comments/:commentId", asyncHandler(deleteComment));
  * /api/comments/{commentId}:
  *   delete:
  *     summary: 댓글 삭제
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: commentId
