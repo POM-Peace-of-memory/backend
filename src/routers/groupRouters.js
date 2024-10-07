@@ -116,11 +116,11 @@ router.post('/groups', asyncHandler(createGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.put('/groups/:groupId', asyncHandler(updateGroup));
+router.patch('/groups/:groupId', asyncHandler(updateGroup));
 /**
  * @swagger
  * /api/groups/{groupId}:
- *   put:
+ *   patch:
  *     tags: [Group]
  *     summary: 그룹 수정
  *     description: 기존 그룹의 정보를 수정합니다.
