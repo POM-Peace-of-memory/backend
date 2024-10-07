@@ -128,27 +128,29 @@ const postList = async (req, res) => {
     // isPublic 문자열을 boolean으로 변환
     const isPublicValue = isPublic === 'true';
 
-    // 게시글 keyword 포함 및 공개 조건 설정
+    // 게시글 keyword 포함
     const where = {
-        groupId: group.id,
-        ...(isPublic !== undefined && { isPublic: isPublicValue }),
-        ...(keyword && {
-            OR: [
-                { title: { contains: keyword } },
-                {
-                    tags: {
-                        some: {
-                            tag: {
-                                content: {
-                                    contains: keyword,
-                                },
+        OR: [
+            { title: { contains: keyword, mode: 'insensitive' } }, // 제목에서 keyword 검색
+            {
+                tags: {
+                    some: {
+                        tag: {
+                            content: {
+                                contains: keyword,
+                                mode: 'insensitive', // 태그에서 keyword 검색
                             },
                         },
                     },
                 },
-            ],
-        }),
+            },
+        ]
     };
+    
+    // 공개 여부 조건 처리
+    if (typeof isPublic !== 'undefined') {
+        where.isPublic = (isPublic == 'true'); // 공개 여부에 따른 조건 추가
+    }
 
     // 게시글 조회
     const totalItemCount = await prisma.post.count({
