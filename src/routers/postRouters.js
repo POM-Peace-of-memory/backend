@@ -1,9 +1,18 @@
-const express = require('express');
-const { createPost, postList, updatedPost, deletePost, postDetail, verifyPassword, likePost, checkPublic } = require('../controllers/postController');
+const express = require("express");
+const {
+  createPost,
+  postList,
+  updatedPost,
+  deletePost,
+  postDetail,
+  verifyPassword,
+  likePost,
+  checkPublic,
+} = require("../controllers/postController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const router = express.Router();
 
-router.post('/groups/:groupId/posts', asyncHandler(createPost));
+router.post("/groups/:groupId/posts", asyncHandler(createPost));
 /**
  * @swagger
  * /api/groups/{groupId}/posts:
@@ -141,7 +150,6 @@ router.post('/groups/:groupId/posts', asyncHandler(createPost));
  *                   example: "존재하지 않는 데이터입니다."
  */
 
-
 router.get("/groups/:groupId/posts", asyncHandler(postList));
 /**
  * @swagger
@@ -263,7 +271,6 @@ router.get("/groups/:groupId/posts", asyncHandler(postList));
  *                   example: "잘못된 요청입니다."
  */
 
-
 router.patch("/posts/:postId", asyncHandler(updatedPost));
 /**
  * @swagger
@@ -377,7 +384,6 @@ router.patch("/posts/:postId", asyncHandler(updatedPost));
  *                   example: "존재하지 않습니다."
  */
 
-
 router.delete("/posts/:postId", asyncHandler(deletePost));
 /**
  * @swagger
@@ -444,7 +450,6 @@ router.delete("/posts/:postId", asyncHandler(deletePost));
  *                   type: string
  *                   example: "존재하지 않습니다"
  */
-
 
 router.get("/posts/:postId", asyncHandler(postDetail));
 /**
@@ -535,7 +540,6 @@ router.get("/posts/:postId", asyncHandler(postDetail));
  *                   example: "존재하지 않는 데이터입니다."
  */
 
-
 router.post("/posts/:postId/verify-password", asyncHandler(verifyPassword));
 /**
  * @swagger
@@ -586,7 +590,6 @@ router.post("/posts/:postId/verify-password", asyncHandler(verifyPassword));
  *                   example: 비밀번호가 일치하지 않습니다.
  */
 
-
 router.post("/posts/:postId/like", asyncHandler(likePost));
 /**
  * @swagger
@@ -627,7 +630,6 @@ router.post("/posts/:postId/like", asyncHandler(likePost));
  *                   type: string
  *                   example: "존재하지 않는 게시글입니다"
  */
-
 
 router.get("/posts/:postId/is-public", asyncHandler(checkPublic));
 /**

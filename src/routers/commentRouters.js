@@ -1,9 +1,14 @@
-const express = require('express');
-const { createComment, commentList, updateComment, deleteComment } = require('../controllers/commentController');
+const express = require("express");
+const {
+  createComment,
+  commentList,
+  updateComment,
+  deleteComment,
+} = require("../controllers/commentController");
 const asyncHandler = require("../middlewares/asyncHandler");
 const router = express.Router();
 
-router.post('/posts/:postId/comments', asyncHandler(createComment));
+router.post("/posts/:postId/comments", asyncHandler(createComment));
 /**
  * @swagger
  * /api/posts/{postId}/comments:
@@ -58,8 +63,7 @@ router.post('/posts/:postId/comments', asyncHandler(createComment));
  *                   type: string
  */
 
-
-router.get('/posts/:postId/comments', asyncHandler(commentList));
+router.get("/posts/:postId/comments", asyncHandler(commentList));
 /**
  * @swagger
  * /api/posts/{postId}/comments:
@@ -124,8 +128,7 @@ router.get('/posts/:postId/comments', asyncHandler(commentList));
  *                   type: string
  */
 
-
-router.patch('/comments/:commentId', asyncHandler(updateComment));
+router.patch("/comments/:commentId", asyncHandler(updateComment));
 /**
  * @swagger
  * /api/comments/{commentId}:
@@ -199,8 +202,7 @@ router.patch('/comments/:commentId', asyncHandler(updateComment));
  *                   example: "존재하지 않습니다"
  */
 
-
-router.delete('/comments/:commentId', asyncHandler(deleteComment));
+router.delete("/comments/:commentId", asyncHandler(deleteComment));
 /**
  * @swagger
  * /api/comments/{commentId}:

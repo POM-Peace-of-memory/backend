@@ -1,0 +1,11 @@
+# Node.js 패키지 관련
+node_modules/
+package.json
+package-lock.json
+
+# Prisma 관련 파일
+prisma/schema.prisma
+prisma/migrations/
+
+# Markdown 파일
+*.md

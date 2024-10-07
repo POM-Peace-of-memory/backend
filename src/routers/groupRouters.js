@@ -1,10 +1,19 @@
-const express = require('express');
-const { getGroups, getGroupById, createGroup, updateGroup, deleteGroup, verifyGroupPassword, likeGroup, isPublicGroup } = require('../controllers/groupController');
+const express = require("express");
+const {
+  getGroups,
+  getGroupById,
+  createGroup,
+  updateGroup,
+  deleteGroup,
+  verifyGroupPassword,
+  likeGroup,
+  isPublicGroup,
+} = require("../controllers/groupController");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 const router = express.Router();
 
-router.get('/groups', asyncHandler(getGroups));
+router.get("/groups", asyncHandler(getGroups));
 /**
  * @swagger
  * /api/groups:
@@ -61,7 +70,7 @@ router.get('/groups', asyncHandler(getGroups));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.get('/groups/:groupId', asyncHandler(getGroupById));
+router.get("/groups/:groupId", asyncHandler(getGroupById));
 /**
  * @swagger
  * /api/groups/{groupId}:
@@ -89,7 +98,7 @@ router.get('/groups/:groupId', asyncHandler(getGroupById));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.post('/groups', asyncHandler(createGroup));
+router.post("/groups", asyncHandler(createGroup));
 /**
  * @swagger
  * /api/groups:
@@ -116,7 +125,7 @@ router.post('/groups', asyncHandler(createGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.patch('/groups/:groupId', asyncHandler(updateGroup));
+router.patch("/groups/:groupId", asyncHandler(updateGroup));
 /**
  * @swagger
  * /api/groups/{groupId}:
@@ -150,7 +159,7 @@ router.patch('/groups/:groupId', asyncHandler(updateGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.delete('/groups/:groupId', asyncHandler(deleteGroup));
+router.delete("/groups/:groupId", asyncHandler(deleteGroup));
 /**
  * @swagger
  * /api/groups/{groupId}:
@@ -183,7 +192,10 @@ router.delete('/groups/:groupId', asyncHandler(deleteGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.post('/groups/:groupId/verify-password', asyncHandler(verifyGroupPassword));
+router.post(
+  "/groups/:groupId/verify-password",
+  asyncHandler(verifyGroupPassword),
+);
 /**
  * @swagger
  * /api/groups/{groupId}/verify-password:
@@ -218,7 +230,7 @@ router.post('/groups/:groupId/verify-password', asyncHandler(verifyGroupPassword
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.post('/groups/:groupId/like', asyncHandler(likeGroup));
+router.post("/groups/:groupId/like", asyncHandler(likeGroup));
 /**
  * @swagger
  * /api/groups/{groupId}/like:
@@ -242,8 +254,8 @@ router.post('/groups/:groupId/like', asyncHandler(likeGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.get('/groups/:groupId/is-public', asyncHandler(isPublicGroup));
-/** 
+router.get("/groups/:groupId/is-public", asyncHandler(isPublicGroup));
+/**
  * @swagger
  * /api/groups/{groupId}/is-public:
  *   get:

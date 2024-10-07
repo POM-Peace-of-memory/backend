@@ -7,16 +7,17 @@ const options = {
     info: {
       version: "1.0.0",
       title: "Peace of Memory",
-      description: "(POM) Peace of Memory : Node.js, express restful api project (CodeItPB-ToyProject)",
+      description:
+        "(POM) Peace of Memory : Node.js, express restful api project (CodeItPB-ToyProject)",
     },
     servers: [
       {
-        url: "/", 
+        url: "/",
         description: "API server",
       },
     ],
   },
-  apis: ["./src/routers/*.js"], 
+  apis: ["./src/routers/*.js"],
 };
 
 const specs = swaggerJsdoc(options);
