@@ -1,17 +1,20 @@
-const express = require('express');
-const asyncHandler = require("../middlewares/asyncHandler")
-const {ErrorCodes, CustomError} = require("../middlewares/errorHandler")
+const express = require("express");
+const asyncHandler = require("../middlewares/asyncHandler");
+const { ErrorCodes, CustomError } = require("../middlewares/errorHandler");
 const router = express.Router();
 
-// 실제 등록시 
+// 실제 등록시
 // router.[method]("[path]", asyncHandler([controller.function]))
 // api에 맞게 메소드, 경로 , 핸들러에 감싸서 컨트롤러의 함수 받으면 됩니다
 // 에러 throw시 커스텀 에러 생성해서 던져 주세요!!
 
 // 테스트 api : hi
-router.get("/hi", asyncHandler((req, res) => {
-    res.send('Hello');
-}));
+router.get(
+  "/hi",
+  asyncHandler((req, res) => {
+    res.send("Hello");
+  }),
+);
 /**
  * @swagger
  * /api/hi:
@@ -29,9 +32,12 @@ router.get("/hi", asyncHandler((req, res) => {
  */
 
 // 테스트 api : error
-router.get("/testErr", asyncHandler((req, res) => {
+router.get(
+  "/testErr",
+  asyncHandler((req, res) => {
     throw new CustomError(ErrorCodes.BadRequest);
-}));
+  }),
+);
 /**
  * @swagger
  * /api/testErr:

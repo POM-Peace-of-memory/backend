@@ -1,9 +1,12 @@
-const express = require('express');
+const express = require("express");
 const asyncHandler = require("../middlewares/asyncHandler");
 const router = express.Router();
-const {imageUpload, multerMiddleware} = require("../controllers/imageController");
+const {
+  imageUpload,
+  multerMiddleware,
+} = require("../controllers/imageController");
 
-router.post("/image",  multerMiddleware,asyncHandler(imageUpload));
+router.post("/image", multerMiddleware, asyncHandler(imageUpload));
 /**
  * @swagger
  * /api/image:
