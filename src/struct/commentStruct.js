@@ -1,5 +1,11 @@
-import * as s from 'superstruct';
+const s = require("superstruct");
 
-// export const CreateComment =
+const CreateComment = s.object({
+  nickname: s.string(),
+  content: s.string(),
+  password: s.string(),
+});
 
-// export const PostComment =
+const UpdateComment = s.partial(CreateComment);
+
+module.exports = { CreateComment, UpdateComment };

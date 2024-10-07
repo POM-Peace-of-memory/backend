@@ -1,11 +1,11 @@
-const express = require('express');
-const multer = require('multer');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const { v4: uuidv4 } = require('uuid');
+const express = require("express");
+const multer = require("multer");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { v4: uuidv4 } = require("uuid");
 const { ErrorCodes, CustomError } = require("../middlewares/errorHandler");
-const path = require('path');
+const path = require("path");
 
-require('dotenv').config();
+require("dotenv").config();
 
 // S3 클라이언트 설정
 const s3Client = new S3Client({
@@ -36,23 +36,22 @@ const uploadToS3 = async (file) => {
   return `https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/${key}`;
 };
 
-const multerMiddleware = upload.single('image')
+const multerMiddleware = upload.single("image");
 
 // 이미지 업로드 핸들러
 const imageUpload = async (req, res) => {
-    // upload.single에서 받아 req.file로 전달
-    const file = req.file;
+  // upload.single에서 받아 req.file로 전달
+  const file = req.file;
 
-    if (!file) {
-      throw new CustomError(ErrorCodes.BadRequest, '파일이 제공되지 않았습니다.');
-    }
+  if (!file) {
+    throw new CustomError(ErrorCodes.BadRequest, "파일이 제공되지 않았습니다.");
+  }
 
-    const fileUrl = await uploadToS3(file);
-    
-    res.json({
-      imageUrl: fileUrl
-    });
+  const fileUrl = await uploadToS3(file);
+
+  res.json({
+    imageUrl: fileUrl,
+  });
 };
 
-
-module.exports = {imageUpload, multerMiddleware};
+module.exports = { imageUpload, multerMiddleware };
