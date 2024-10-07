@@ -125,11 +125,7 @@ const updateGroup = async (req, res) => {
     const { password, ...updateData } = req.body;
 
     // 해당 그룹 가져옴 
-    const group = await prisma.group.findUnique({ where: { id: groupId } });
- 
-    if (!group) {
-        throw new CustomError(ErrorCodes.NotFound);
-    }
+    const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
 
     if(!password){
         throw new CustomError(ErrorCodes.BadRequest);
@@ -166,12 +162,8 @@ const deleteGroup = async (req, res) => {
     const { groupId } = req.params;
     const { password } = req.body;
 
-    const group = await prisma.group.findUnique({ where: { id: groupId } });
+    const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
 
-    if (!group) {
-        throw new CustomError(ErrorCodes.NotFound);
-    }
-    
     const isPasswordValid = await comparePassword(password, group.password);
         
     if (!isPasswordValid) {
@@ -187,7 +179,7 @@ const deleteGroup = async (req, res) => {
 const getGroupById = async (req, res) => {
     const { groupId } = req.params;
 
-    const group = await prisma.group.findUnique({
+    const group = await prisma.group.findUniqueOrThrow({
         where: { id: groupId },
         select: {
             id: true,
@@ -214,10 +206,6 @@ const getGroupById = async (req, res) => {
         },
     });
 
-    if (!group) {
-        throw new CustomError(ErrorCodes.NotFound);
-    }
-
     const { _count,groupBadges, ...groupData } = group;
 
     const badges = groupBadges.map(groupBadge => groupBadge.badge.content);
@@ -235,10 +223,7 @@ const verifyGroupPassword = async (req, res) => {
     const { groupId } = req.params;
     const { password } = req.body;
 
-    const group = await prisma.group.findUnique({ where: { id: groupId } });
-    if (!group) {
-        throw new CustomError(ErrorCodes.NotFound);
-    }
+    const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
 
     const isPasswordValid = await comparePassword(password, group.password);
     if (!isPasswordValid) {
@@ -252,10 +237,7 @@ const verifyGroupPassword = async (req, res) => {
 const likeGroup = async (req, res) => {
     const { groupId } = req.params;
 
-    const group = await prisma.group.findUnique({ where: { id: groupId } });
-    if (!group) {
-        throw new CustomError(ErrorCodes.NotFound);
-    }
+    const group = await prisma.group.findUniqueOrThrow({ where: { id: groupId } });
 
     await prisma.groupLike.create({
         data: { groupId },
@@ -268,14 +250,10 @@ const likeGroup = async (req, res) => {
 const isPublicGroup = async (req, res) => {
     const { groupId } = req.params;
 
-    const group = await prisma.group.findUnique({
+    const group = await prisma.group.findUniqueOrThrow({
         where: { id: groupId },
         select: { id: true, isPublic: true },
     });
-
-    if (!group) {
-        throw new CustomError(ErrorCodes.NotFound);
-    }
 
     res.status(200).json(group);
 };
