@@ -20,7 +20,10 @@ const createPost = async (groupId, postData) => {
   // 그룹 비밀번호 확인
   const passwordMatch = await comparePassword(groupPassword, group.password);
   if (!passwordMatch) {
-    throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 일치하지 않습니다.");
+    throw new CustomError(
+      ErrorCodes.Forbidden,
+      "비밀번호가 일치하지 않습니다.",
+    );
   }
 
   // 게시글 비밀번호 해싱
@@ -86,7 +89,13 @@ const createPost = async (groupId, postData) => {
 
 // 게시글 목록 조회
 const getPosts = async (groupId, queryParams) => {
-  const { page = 1, pageSize = 8, sortBy = "latest", keyword = "", isPublic = "true" } = queryParams;
+  const {
+    page = 1,
+    pageSize = 8,
+    sortBy = "latest",
+    keyword = "",
+    isPublic = "true",
+  } = queryParams;
 
   // 공개 여부를 boolean 값으로 변환
   const isPublicValue = isPublic === "true";
@@ -168,7 +177,10 @@ const updatePost = async (postId, updateData) => {
   const post = await prisma.post.findUniqueOrThrow({ where: { id: postId } });
 
   // 비밀번호를 비교하여 불일치 시 업데이트 불가
-  const isPasswordValid = await comparePassword(postPassword, post.postPassword);
+  const isPasswordValid = await comparePassword(
+    postPassword,
+    post.postPassword,
+  );
   if (!isPasswordValid) {
     throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
   }
@@ -236,7 +248,10 @@ const deletePost = async (postId, postPassword) => {
   const post = await prisma.post.findUniqueOrThrow({ where: { id: postId } });
 
   // 비밀번호 확인
-  const isPasswordValid = await comparePassword(postPassword, post.postPassword);
+  const isPasswordValid = await comparePassword(
+    postPassword,
+    post.postPassword,
+  );
   if (!isPasswordValid) {
     throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
   }
@@ -290,7 +305,10 @@ const verifyPostPassword = async (postId, postPassword) => {
   const post = await prisma.post.findUniqueOrThrow({ where: { id: postId } });
 
   // 비밀번호 확인
-  const isPasswordValid = await comparePassword(postPassword, post.postPassword);
+  const isPasswordValid = await comparePassword(
+    postPassword,
+    post.postPassword,
+  );
   if (!isPasswordValid) {
     throw new CustomError(ErrorCodes.Forbidden, "비밀번호가 틀렸습니다");
   }

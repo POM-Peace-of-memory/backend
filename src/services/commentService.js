@@ -1,4 +1,3 @@
-// services/commentService.js
 const { PrismaClient } = require("@prisma/client");
 const { hashPassword, comparePassword } = require("../util/passwordUtils.js");
 const { CustomError, ErrorCodes } = require("../middlewares/errorHandler.js");

@@ -21,7 +21,10 @@ const commentList = async (req, res) => {
 const updateComment = async (req, res) => {
   s.assert(req.body, UpdateComment);
   const { commentId } = req.params;
-  const updatedComment = await commentService.updateComment(commentId, req.body);
+  const updatedComment = await commentService.updateComment(
+    commentId,
+    req.body,
+  );
   res.status(200).json(updatedComment);
 };
 
