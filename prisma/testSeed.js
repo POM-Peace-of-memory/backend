@@ -1,19 +1,19 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const p = require("../src/util/passwordUtils")
+const p = require("../src/util/passwordUtils");
 async function main() {
   // 1. 테스트 그룹 생성 (생성일은 1년 전)
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-  const password = await p.hashPassword("asdf1234")
+  const password = await p.hashPassword("asdf1234");
 
   const group = await prisma.group.create({
     data: {
-      name: '테스트 그룹',
+      name: "테스트 그룹",
       password: password, // 실제 환경에서는 해시된 비밀번호 사용
-      imageUrl: 'https://example.com/group.jpg',
+      imageUrl: "https://example.com/group.jpg",
       isPublic: true,
-      introduction: '모든 조건을 만족하는 테스트 그룹입니다.',
+      introduction: "모든 조건을 만족하는 테스트 그룹입니다.",
       createdAt: oneYearAgo,
     },
   });
@@ -74,12 +74,14 @@ async function main() {
     });
   }
 
-  console.log('모든 조건을 만족하는 테스트 데이터가 성공적으로 추가되었습니다.');
+  console.log(
+    "모든 조건을 만족하는 테스트 데이터가 성공적으로 추가되었습니다.",
+  );
 }
 
 main()
   .catch((e) => {
-    console.error('테스트 데이터 추가 중 에러 발생:', e);
+    console.error("테스트 데이터 추가 중 에러 발생:", e);
     process.exit(1);
   })
   .finally(async () => {

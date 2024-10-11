@@ -52,7 +52,7 @@ const deleteGroup = async (req, res) => {
 // 그룹 상세 조회
 const getGroupById = async (req, res) => {
   const { groupId } = req.params;
-  await BadgeService.assert1YearBadge(groupId)
+  await BadgeService.assert1YearBadge(groupId);
   const group = await groupService.getGroupById(groupId);
   res.status(200).json(group);
 };

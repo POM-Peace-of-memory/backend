@@ -8,8 +8,8 @@ const createPost = async (req, res) => {
   s.assert(req.body, CreatePost);
   const { groupId } = req.params;
   const post = await postService.createPost(groupId, req.body);
-  await BadgeService.assert7DayBadge(groupId)
-  await BadgeService.assert20PostBadge(groupId)
+  await BadgeService.assert7DayBadge(groupId);
+  await BadgeService.assert20PostBadge(groupId);
   res.status(201).json(post);
 };
 
