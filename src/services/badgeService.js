@@ -23,13 +23,14 @@ const getBadgeId = async (content) => {
 // 7일 연속 게시글 등록 뱃지 검증
 const assert7DayBadge = async (groupId) => {
   const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // 오늘 포함 7일간 확인
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); // 오늘 포함 7일간 확인
+  sevenDaysAgo.setHours(0, 0, 0, 0); // 시간, 분, 초, 밀리초를 0으로 설정
 
   const postsCountByDay = await prisma.$queryRaw`
     SELECT DATE("createdAt") as date, COUNT(*) as count
     FROM "Post"
     WHERE "groupId" = ${groupId}
-    AND "createdAt" > ${sevenDaysAgo}
+    AND "createdAt" >= ${sevenDaysAgo}
     GROUP BY DATE("createdAt")
     ORDER BY date ASC;
   `;
