@@ -26,7 +26,7 @@ model Group {
 
 model Badge {
   id          String       @id @default(uuid())
-  content     String
+  content     String       @unique
   groupBadges GroupBadge[]
 }
 
