@@ -1,4 +1,5 @@
 const postService = require("../services/postService.js");
+const BadgeService = require("../services/badgeService.js");
 const s = require("superstruct");
 const { CreatePost, PatchPost } = require("../struct/postStruct.js");
 
@@ -7,6 +8,8 @@ const createPost = async (req, res) => {
   s.assert(req.body, CreatePost);
   const { groupId } = req.params;
   const post = await postService.createPost(groupId, req.body);
+  await BadgeService.assert7DayBadge(groupId);
+  await BadgeService.assert20PostBadge(groupId);
   res.status(201).json(post);
 };
 
@@ -52,6 +55,7 @@ const verifyPassword = async (req, res) => {
 const likePost = async (req, res) => {
   const { postId } = req.params;
   await postService.likePost(postId);
+  await BadgeService.assert10KPostLikesBadge(postId);
   res.status(200).json({ message: "게시글 공감하기 성공" });
 };
 

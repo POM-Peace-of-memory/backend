@@ -24,10 +24,15 @@ const createGroup = async (groupData) => {
   });
 };
 
-const getGroups = async (pagination, filters, sortBy) => {
-  const { page, pageSize } = pagination;
-  const { isPublic, keyword } = filters;
-  
+const getGroups = async (queryParams) => {
+  const {
+    page = 1,
+    pageSize = 8,
+    sortBy = "latest",
+    keyword = "",
+    isPublic,
+  } = queryParams;
+
   const skip = (page - 1) * pageSize;
   const take = pageSize;
 
@@ -47,7 +52,7 @@ const getGroups = async (pagination, filters, sortBy) => {
     default:
       orderBy = { createdAt: "desc" };
   }
-  
+
   // 조건에 따라 where절로 필터링
   const where = {
     OR: [

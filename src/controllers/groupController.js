@@ -1,4 +1,5 @@
 const groupService = require("../services/groupService.js");
+const BadgeService = require("../services/badgeService.js");
 const s = require("superstruct");
 const { CreateGroup, UpdateGroup } = require("../struct/groupStruct.js");
 
@@ -11,13 +12,7 @@ const createGroup = async (req, res) => {
 
 // 그룹 목록 조회
 const getGroups = async (req, res) => {
-  // 퀴리 파라미터
-  const { page = 1, pageSize = 10, sortBy = "latest", keyword = "", isPublic } = req.query;
-  const groups = await groupService.getGroups(
-    { page: Number(page), pageSize: Number(pageSize) },
-    { isPublic, keyword },
-    sortBy,
-  );
+  const groups = await groupService.getGroups(req.query);
   res.status(200).json(groups);
 };
 
@@ -26,7 +21,11 @@ const updateGroup = async (req, res) => {
   const { groupId } = req.params;
   s.assert(req.body, UpdateGroup);
   const { password, ...updateData } = req.body;
-  const updatedGroup = await groupService.updateGroup(groupId, updateData, password);
+  const updatedGroup = await groupService.updateGroup(
+    groupId,
+    updateData,
+    password,
+  );
   res.status(200).json(updatedGroup);
 };
 
@@ -41,6 +40,7 @@ const deleteGroup = async (req, res) => {
 // 그룹 상세 조회
 const getGroupById = async (req, res) => {
   const { groupId } = req.params;
+  await BadgeService.assert1YearBadge(groupId);
   const group = await groupService.getGroupById(groupId);
   res.status(200).json(group);
 };
@@ -57,6 +57,7 @@ const verifyGroupPassword = async (req, res) => {
 const likeGroup = async (req, res) => {
   const { groupId } = req.params;
   await groupService.likeGroup(groupId);
+  await BadgeService.assert10KLikesBadge(groupId);
   res.status(200).json({ message: "그룹 공감하기 성공" });
 };
 
