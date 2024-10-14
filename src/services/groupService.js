@@ -34,7 +34,7 @@ const getGroups = async (queryParams) => {
   } = queryParams;
 
   const skip = (page - 1) * pageSize;
-  const take = pageSize;
+  const take = Number(pageSize);
 
   // 정렬 조건
   let orderBy;
