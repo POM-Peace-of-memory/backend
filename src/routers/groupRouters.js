@@ -1,19 +1,10 @@
 const express = require("express");
-const {
-  getGroups,
-  getGroupById,
-  createGroup,
-  updateGroup,
-  deleteGroup,
-  verifyGroupPassword,
-  likeGroup,
-  isPublicGroup,
-} = require("../controllers/groupController");
+const groupController = require("../controllers/groupController");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 const router = express.Router();
 
-router.get("/groups", asyncHandler(getGroups));
+router.get("/groups", asyncHandler(groupController.getGroups));
 /**
  * @swagger
  * /api/groups:
@@ -70,7 +61,7 @@ router.get("/groups", asyncHandler(getGroups));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.get("/groups/:groupId", asyncHandler(getGroupById));
+router.get("/groups/:groupId", asyncHandler(groupController.getGroupById));
 /**
  * @swagger
  * /api/groups/{groupId}:
@@ -98,7 +89,7 @@ router.get("/groups/:groupId", asyncHandler(getGroupById));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.post("/groups", asyncHandler(createGroup));
+router.post("/groups", asyncHandler(groupController.createGroup));
 /**
  * @swagger
  * /api/groups:
@@ -125,7 +116,7 @@ router.post("/groups", asyncHandler(createGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.patch("/groups/:groupId", asyncHandler(updateGroup));
+router.patch("/groups/:groupId", asyncHandler(groupController.updateGroup));
 /**
  * @swagger
  * /api/groups/{groupId}:
@@ -159,7 +150,7 @@ router.patch("/groups/:groupId", asyncHandler(updateGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.delete("/groups/:groupId", asyncHandler(deleteGroup));
+router.delete("/groups/:groupId", asyncHandler(groupController.deleteGroup));
 /**
  * @swagger
  * /api/groups/{groupId}:
@@ -194,7 +185,7 @@ router.delete("/groups/:groupId", asyncHandler(deleteGroup));
 
 router.post(
   "/groups/:groupId/verify-password",
-  asyncHandler(verifyGroupPassword),
+  asyncHandler(groupController.verifyGroupPassword),
 );
 /**
  * @swagger
@@ -230,7 +221,7 @@ router.post(
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.post("/groups/:groupId/like", asyncHandler(likeGroup));
+router.post("/groups/:groupId/like", asyncHandler(groupController.likeGroup));
 /**
  * @swagger
  * /api/groups/{groupId}/like:
@@ -254,7 +245,7 @@ router.post("/groups/:groupId/like", asyncHandler(likeGroup));
  *         description: 서버 오류가 발생했습니다.
  */
 
-router.get("/groups/:groupId/is-public", asyncHandler(isPublicGroup));
+router.get("/groups/:groupId/is-public", asyncHandler(groupController.isPublicGroup));
 /**
  * @swagger
  * /api/groups/{groupId}/is-public:
